@@ -15,24 +15,34 @@ public class CraneScript : MonoBehaviour
     [Header("Movement")]
     public float downSpeed;
     public float rotationSpeed;
+    public float rotationAmount;
     public float armSpeed;
     public float MaxArmSpeed;
     public float smoothDownSpeed;
     public float returnSpeed;
     public float raycastDistance;
-    private bool rotateArms;
-    private bool extractDown;
-    private bool extractUp;
+    //----------------------------------------------------------------------------
+    private bool rotateArms = false;
+    private bool extractDown=false;
+    private bool extractUp = false;
     private bool canSteer = true;
     private Rigidbody rb;
     private Player player;
-    private float startRotZ;
+    //----------------------------------------------------------------------------
+    private float startRot1;
+    private float startRot2;
+    private float startRot3;
+    private float r1;
+    private float r2;
+    private float r3;
     // Start is called before the first frame update
     void Start()
     {
         player = ReInput.players.GetPlayer(0);
         rb = GetComponent<Rigidbody>();
-        startRotZ = arm1.transform.rotation.eulerAngles.z;
+        startRot1 = arm1.transform.localRotation.eulerAngles.z;
+        startRot2 = arm2.transform.localRotation.eulerAngles.z;
+        startRot3 = arm3.transform.localRotation.eulerAngles.z;
     }
 
     // Update is called once per frame
@@ -47,12 +57,16 @@ public class CraneScript : MonoBehaviour
         {
             DownAndRaycast();
         }
-        RotateArms();
+        if (rotateArms)
+        {
+            RotateArms();
+        }
+        
     }
     void DownAndRaycast()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, 100f))
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 1000f))
         {
             Debug.DrawRay(transform.position, Vector3.down * hit.distance, Color.yellow);
             if(hit.distance >= raycastDistance)
@@ -71,8 +85,9 @@ public class CraneScript : MonoBehaviour
     {
         if (player.GetButtonDown("Confirm")&&canSteer)
         {
-            canSteer = false;
             extractDown = true;
+            canSteer = false;
+            
         }
         if (canSteer)
         {
@@ -112,7 +127,16 @@ public class CraneScript : MonoBehaviour
     void RotateArms()
     {
         
-        float Angle = Mathf.SmoothDampAngle(arm1.transform.rotation.eulerAngles.z, targetangle, ref r, moveDuration);
-        transform.rotation = Quaternion.Euler(0, Angle, 0);
+        float Angle1 = Mathf.SmoothDampAngle(arm1.transform.rotation.eulerAngles.z, startRot1+rotationAmount, ref r1, rotationSpeed);
+        float Angle2 = Mathf.SmoothDampAngle(arm2.transform.rotation.eulerAngles.z, startRot2+rotationAmount, ref r2, rotationSpeed);
+        float Angle3 = Mathf.SmoothDampAngle(arm3.transform.rotation.eulerAngles.z, startRot3+rotationAmount, ref r3, rotationSpeed);
+        arm1.transform.rotation = Quaternion.Euler(arm1.transform.rotation.eulerAngles.x, arm1.transform.rotation.eulerAngles.y, Angle1);
+        arm2.transform.rotation = Quaternion.Euler(arm2.transform.rotation.eulerAngles.x, arm2.transform.rotation.eulerAngles.y, Angle2);
+        arm3.transform.rotation = Quaternion.Euler(arm3.transform.rotation.eulerAngles.x, arm3.transform.rotation.eulerAngles.y, Angle3);
+
+        
+        
+
+        
     }
 }
