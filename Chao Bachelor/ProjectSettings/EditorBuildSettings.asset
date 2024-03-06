@@ -4,5 +4,15 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ClawMachinePro/Scenes/ClawMachine - Red & Blue.unity
+    guid: 888999170224ce54288381580b981114
+  - enabled: 1
+    path: Assets/ClawMachinePro/Scenes/ClawMachine - Double Wide Red & Blue Variant
+      1.unity
+    guid: b531df97c3355b647ad73d47bfe2a74b
+  - enabled: 1
+    path: Assets/ClawMachinePro/Scenes/ClawMachine - Double Wide Red & Blue Variant
+      2.unity
+    guid: 9b5b92c5776b7034f8807c320b69f41f

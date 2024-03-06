@@ -24,7 +24,7 @@ public class CraneScript : MonoBehaviour
     //----------------------------------------------------------------------------
     private bool rotateArms = false;
     private bool extractDown=false;
-    private bool extractUp = false;
+    //private bool extractUp = false;
     private bool canSteer = true;
     private Rigidbody rb;
     private Player player;
