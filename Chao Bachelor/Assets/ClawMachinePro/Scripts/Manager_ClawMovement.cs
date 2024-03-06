@@ -13,11 +13,8 @@ public class Manager_ClawMovement : MonoBehaviour {
     public Text coinsTextLabel;
     public GameObject UI_OutOfCoinsPopup;
 
-    // These are used to move the claw when using UI On Screen Buttons
-    private bool UI_ClawButtonUp = false;
-    private bool UI_ClawButtonDown = false;
-    private bool UI_ClawButtonLeft = false;
-    private bool UI_ClawButtonRight = false;
+    
+    
 
     [Space(5f)]
 
@@ -80,25 +77,13 @@ public class Manager_ClawMovement : MonoBehaviour {
     public Transform clawBoundaryZ_Back;
     public Transform clawBoundaryZ_Forward;
 
-    [Header("Ovverhead Motor Settings")]
-
-    // Motors
-    public Transform topMainMotor;
-    public Transform overHeadMotorRailSystem;
-
-    [HideInInspector]
-    public Vector3 topMainMotorHomePosition;
-
-    [HideInInspector]
-    public Vector3 overHeadMotorRailSystemHomePosition;
+    
 
     [HideInInspector]
     public bool isDroppingBall = false;
 
 
-    [Header("Prop Joystick Box")]
-    public Transform propJoyStick;
-    public float propJoystickSpeed = 2.0f;
+    
 
     [Header("Misc Settings")]
     public PrizeCatcherDetector_ClawMachine prizeCatcherDetector;
@@ -108,8 +93,7 @@ public class Manager_ClawMovement : MonoBehaviour {
 
         // Setup our inital positions
         clawHomePosition = clawHolder.transform.position;
-        topMainMotorHomePosition = topMainMotor.position;
-        overHeadMotorRailSystemHomePosition = overHeadMotorRailSystem.position;
+        
 
         // Setup our boundaries
         boundaryX_Left = clawBoundaryX_Left.position.x;
@@ -228,16 +212,21 @@ public class Manager_ClawMovement : MonoBehaviour {
 
     private void clawMoveUp()
     {
+        //filler to test movement
+        clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);
         // + Z direction
         if (clawHolder.transform.position.z < boundaryZ_Back)
         {
             // Move our claw
-            clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);                 
+            clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);  
+            Debug.Log("Claw Move Up");
         }
     }
 
     private void clawMoveDown()
     {
+        //filler to test movement
+        clawHolder.Translate(0f, 0f, movementSpeed * -1 * Time.deltaTime);
         // - Z direction
         if (clawHolder.transform.position.z > boundaryZ_Forward)
         {
@@ -248,7 +237,8 @@ public class Manager_ClawMovement : MonoBehaviour {
 
     private void clawMoveLeft()
     {
-       
+        //filler to test movement
+        clawHolder.Translate(movementSpeed * -1 * Time.deltaTime, 0f, 0f);
         // + X direction
         if (clawHolder.transform.position.x > boundaryX_Left)
         {
@@ -259,6 +249,10 @@ public class Manager_ClawMovement : MonoBehaviour {
 
     private void clawMoveRight()
     {
+        //filler to test movement
+        clawHolder.Translate(movementSpeed * 1 * Time.deltaTime, 0f, 0f);
+
+
         // - X direction
         if (clawHolder.transform.position.x < boundaryX_Right)
         {
