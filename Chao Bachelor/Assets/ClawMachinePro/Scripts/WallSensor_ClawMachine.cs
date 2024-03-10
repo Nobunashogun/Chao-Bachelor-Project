@@ -13,5 +13,9 @@ public class WallSensor_ClawMachine : MonoBehaviour {
         {
             managerClawMovement.stopMovement = true;
         }
+        if(other.CompareTag("Item") && !managerClawMovement.stopMovement)
+        {
+            managerClawMovement.stopMovement = true;
+        }
     }
 }

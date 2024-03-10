@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Rewired;
 
 public class Manager_ClawMovement : MonoBehaviour {
 
@@ -9,9 +10,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     public bool freePlay = true;
     public int playerCoins = 10;
 
-    [Header("UI Settings")]
-    public Text coinsTextLabel;
-    public GameObject UI_OutOfCoinsPopup;
+    
 
     
     
@@ -88,9 +87,12 @@ public class Manager_ClawMovement : MonoBehaviour {
     [Header("Misc Settings")]
     public PrizeCatcherDetector_ClawMachine prizeCatcherDetector;
 
+
+    private Player player;
 	// Use this for initialization
 	void Start () {
 
+       player = ReInput.players.GetPlayer(0);
         // Setup our inital positions
         clawHomePosition = clawHolder.transform.position;
         
@@ -132,23 +134,23 @@ public class Manager_ClawMovement : MonoBehaviour {
             }
 
             // Normal inputs below...
-            if (Input.GetKey(KeyCode.UpArrow))
+            if (player.GetAxisRaw("Vertical") > 0.05f)
             {
                 clawMoveUp();
                 Debug.Log("Up Arrow Pressed");
             }
 
-            if (Input.GetKey(KeyCode.DownArrow))
+            if (player.GetAxisRaw("Vertical")< -0.05)
             {
                 clawMoveDown();
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (player.GetAxisRaw("Horizontal")< -0.05)
             {
                 clawMoveLeft();
             }
 
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (player.GetAxisRaw("Horizontal") > 0.05)
             {
                 clawMoveRight();
             }
@@ -193,8 +195,10 @@ public class Manager_ClawMovement : MonoBehaviour {
                 else
                 {
                     // Alert the player they have no coins left
+                    /*
                     if (!UI_OutOfCoinsPopup.activeInHierarchy)
                         UI_OutOfCoinsPopup.SetActive(true);
+                    */
                 }
             }
         }
@@ -213,9 +217,9 @@ public class Manager_ClawMovement : MonoBehaviour {
     private void clawMoveUp()
     {
         //filler to test movement
-        clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);
+        //clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);
         // + Z direction
-        if (clawHolder.transform.position.z < boundaryZ_Back)
+        if (clawHolder.transform.position.z > boundaryZ_Back)
         {
             // Move our claw
             clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);  
@@ -226,9 +230,9 @@ public class Manager_ClawMovement : MonoBehaviour {
     private void clawMoveDown()
     {
         //filler to test movement
-        clawHolder.Translate(0f, 0f, movementSpeed * -1 * Time.deltaTime);
+        //clawHolder.Translate(0f, 0f, movementSpeed * -1 * Time.deltaTime);
         // - Z direction
-        if (clawHolder.transform.position.z > boundaryZ_Forward)
+        if (clawHolder.transform.position.z < boundaryZ_Forward)
         {
             // Move our claw
             clawHolder.Translate(0f, 0f, movementSpeed * -1 * Time.deltaTime);
@@ -238,9 +242,9 @@ public class Manager_ClawMovement : MonoBehaviour {
     private void clawMoveLeft()
     {
         //filler to test movement
-        clawHolder.Translate(movementSpeed * -1 * Time.deltaTime, 0f, 0f);
+        //clawHolder.Translate(movementSpeed * -1 * Time.deltaTime, 0f, 0f);
         // + X direction
-        if (clawHolder.transform.position.x > boundaryX_Left)
+        if (clawHolder.transform.position.x < boundaryX_Left)
         {
             // Move our claw
             clawHolder.Translate(movementSpeed * -1 * Time.deltaTime, 0f, 0f);
@@ -250,11 +254,11 @@ public class Manager_ClawMovement : MonoBehaviour {
     private void clawMoveRight()
     {
         //filler to test movement
-        clawHolder.Translate(movementSpeed * 1 * Time.deltaTime, 0f, 0f);
+        //clawHolder.Translate(movementSpeed * 1 * Time.deltaTime, 0f, 0f);
 
 
         // - X direction
-        if (clawHolder.transform.position.x < boundaryX_Right)
+        if (clawHolder.transform.position.x > boundaryX_Right)
         {
             // Move our claww
             clawHolder.Translate(movementSpeed * 1 * Time.deltaTime, 0f, 0f);
@@ -466,7 +470,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         playerCoins = playerCoins + 10;
 
         // Close the popup
-        UI_OutOfCoinsPopup.SetActive(false);
+        //UI_OutOfCoinsPopup.SetActive(false);
     }
 
    
