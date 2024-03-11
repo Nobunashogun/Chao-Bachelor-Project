@@ -422,7 +422,7 @@ public class Manager_ClawMovement : MonoBehaviour {
 
             if (shouldReturnHomeAutomatically)
             {
-                yield return new WaitForSeconds(1.0f);
+                yield return new WaitForSeconds(0.5f);
 
                 // Return home now
                 float startTime = Time.time;
@@ -431,7 +431,7 @@ public class Manager_ClawMovement : MonoBehaviour {
                 while (Vector3.Distance(clawHolder.transform.position, clawHomePosition) > 0.05f)
                 {
                     // Distance moved = time * speed.
-                    float distCovered = (Time.time - startTime) * 0.025f;
+                    float distCovered = (Time.time - startTime) * 0.03f;
 
                     // Fraction of journey completed = current distance divided by total distance.
                     float fracJourney = distCovered / journeyLength;
@@ -447,7 +447,7 @@ public class Manager_ClawMovement : MonoBehaviour {
                 // Play opening animation
                 OpenClaw();
 
-                yield return new WaitForSeconds(1.55f);
+                yield return new WaitForSeconds(1.10f);
 
                 CloseClaw();
             }
@@ -487,7 +487,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     private void OpenClaw()
     {
         // Play opening animation
-        clawHeadAnimation["Claw_Open_New"].speed = 1f;
+        clawHeadAnimation["Claw_Open_New"].speed = 1.5f;
         clawHeadAnimation["Claw_Open_New"].time = 0f;
         clawHeadAnimation.CrossFade("Claw_Open_New");
     }
@@ -497,7 +497,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     /// </summary>
     private void CloseClaw()
     {
-        clawHeadAnimation["Claw_Open_New"].speed = -1f;
+        clawHeadAnimation["Claw_Open_New"].speed = -1.5f;
         clawHeadAnimation["Claw_Open_New"].time = clawHeadAnimation["Claw_Open_New"].length;
         clawHeadAnimation.CrossFade("Claw_Open_New");
     }
@@ -508,13 +508,13 @@ public class Manager_ClawMovement : MonoBehaviour {
     /// <returns></returns>
     IEnumerator WeakClaws()
     {
-        clawHeadAnimation["Claw_Open_Weak"].speed = -1f;
+        clawHeadAnimation["Claw_Open_Weak"].speed = -1.5f;
         clawHeadAnimation["Claw_Open_Weak"].time = clawHeadAnimation["Claw_Open_Weak"].length;
         clawHeadAnimation.CrossFade("Claw_Open_Weak");
 
         yield return new WaitForSeconds(Random.Range(2.15f, 2.85f));
 
-        clawHeadAnimation["Claw_Close_From_Weak"].speed = -1f;
+        clawHeadAnimation["Claw_Close_From_Weak"].speed = -1.5f;
         clawHeadAnimation["Claw_Close_From_Weak"].time = clawHeadAnimation["Claw_Close_From_Weak"].length;
         clawHeadAnimation.CrossFade("Claw_Close_From_Weak");
 
@@ -544,18 +544,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     /// This is used to close the UI popup and give the player more coins.
     /// You can have your own IAP code here.
     /// </summary>
-    public void UI_OutOfCoinsPopup_PurchaseMore()
-    {
-        // This is the function where you can wire in the Unity IAP code found here:
-        //https://unity3d.com/learn/tutorials/topics/ads-analytics/integrating-unity-iap-your-game
-        // And easily add IAP to your own game!!
-
-        // Give the player more coins
-        playerCoins = playerCoins + 10;
-
-        // Close the popup
-        //UI_OutOfCoinsPopup.SetActive(false);
-    }
+    
 
    
 
