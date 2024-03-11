@@ -132,7 +132,7 @@ public class Manager_ClawMovement : MonoBehaviour {
             {
                 dropClawButtonInput();
             }
-
+            
             // Normal inputs below...
             if (player.GetAxisRaw("Vertical") > 0.05f)
             {
@@ -154,6 +154,8 @@ public class Manager_ClawMovement : MonoBehaviour {
             {
                 clawMoveRight();
             }
+            
+            
         }
     }
 
@@ -219,12 +221,37 @@ public class Manager_ClawMovement : MonoBehaviour {
         //filler to test movement
         //clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);
         // + Z direction
-        if (clawHolder.transform.position.z > boundaryZ_Back)
+        var camera = Camera.main;
+        Ray ray = new Ray(clawHolder.transform.position, camera.transform.forward);
+        RaycastHit hit;
+        if(Physics.Raycast(ray,out hit))
         {
-            // Move our claw
-            clawHolder.Translate(0f, 0f, movementSpeed * 1 * Time.deltaTime);  
-            Debug.Log("Claw Move Up");
+            if(hit.distance> 0.1)
+            {
+                //camera forward and right vectors:
+                var forward = camera.transform.forward;
+                var right = camera.transform.right;
+
+                //steering.Normalize();
+                //project forward and right vectors on the horizontal plane (y = 0)
+                forward.y = 0f;
+                right.y = 0f;
+                forward.Normalize();
+                right.Normalize();
+
+
+                //this is the direction in the world space we want to move:
+                var desiredMoveDirection = forward * 1 + right * 0;
+                desiredMoveDirection.Normalize();
+                desiredMoveDirection *= -1;
+                clawHolder.Translate(desiredMoveDirection * movementSpeed * Time.deltaTime);
+
+                // Move our claw
+
+                Debug.Log("Claw Move Up Camera Correction");
+            }
         }
+        
     }
 
     private void clawMoveDown()
@@ -232,11 +259,34 @@ public class Manager_ClawMovement : MonoBehaviour {
         //filler to test movement
         //clawHolder.Translate(0f, 0f, movementSpeed * -1 * Time.deltaTime);
         // - Z direction
-        if (clawHolder.transform.position.z < boundaryZ_Forward)
+        var camera = Camera.main;
+        Ray ray = new Ray(clawHolder.transform.position, camera.transform.forward*-1);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
         {
-            // Move our claw
-            clawHolder.Translate(0f, 0f, movementSpeed * -1 * Time.deltaTime);
-        }
+            if (hit.distance > 0.1)
+            {
+                //camera forward and right vectors:
+                var forward = camera.transform.forward;
+                var right = camera.transform.right;
+
+                //steering.Normalize();
+                //project forward and right vectors on the horizontal plane (y = 0)
+                forward.y = 0f;
+                right.y = 0f;
+                forward.Normalize();
+                right.Normalize();
+
+
+                //this is the direction in the world space we want to move:
+                var desiredMoveDirection = forward * -1 + right * 0;
+                desiredMoveDirection.Normalize();
+                desiredMoveDirection *= -1;
+                clawHolder.Translate(desiredMoveDirection * movementSpeed * Time.deltaTime);
+                // Move our claw
+                //clawHolder.Translate(0f, 0f, movementSpeed * -1 * Time.deltaTime);
+            }
+        }   
     }
 
     private void clawMoveLeft()
@@ -244,26 +294,71 @@ public class Manager_ClawMovement : MonoBehaviour {
         //filler to test movement
         //clawHolder.Translate(movementSpeed * -1 * Time.deltaTime, 0f, 0f);
         // + X direction
-        if (clawHolder.transform.position.x < boundaryX_Left)
+        var camera = Camera.main;
+        Ray ray = new Ray(clawHolder.transform.position, camera.transform.right * -1);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
         {
-            // Move our claw
-            clawHolder.Translate(movementSpeed * -1 * Time.deltaTime, 0f, 0f);
+            if (hit.distance > 0.1)
+            {
+                //camera forward and right vectors:
+                var forward = camera.transform.forward;
+                var right = camera.transform.right;
+
+                //steering.Normalize();
+                //project forward and right vectors on the horizontal plane (y = 0)
+                forward.y = 0f;
+                right.y = 0f;
+                forward.Normalize();
+                right.Normalize();
+
+
+                //this is the direction in the world space we want to move:
+                var desiredMoveDirection = forward * 0 + right * -1;
+                desiredMoveDirection.Normalize();
+                desiredMoveDirection *= -1;
+                clawHolder.Translate(desiredMoveDirection * movementSpeed * Time.deltaTime);
+
+                // Move our claw
+                //clawHolder.Translate(movementSpeed * -1 * Time.deltaTime, 0f, 0f);
+            }
         }
+                
     }
 
     private void clawMoveRight()
     {
         //filler to test movement
         //clawHolder.Translate(movementSpeed * 1 * Time.deltaTime, 0f, 0f);
-
-
-        // - X direction
-        if (clawHolder.transform.position.x > boundaryX_Right)
+        var camera = Camera.main;
+        Ray ray = new Ray(clawHolder.transform.position, camera.transform.right);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
         {
-            // Move our claww
-            clawHolder.Translate(movementSpeed * 1 * Time.deltaTime, 0f, 0f);
-        }
+            if (hit.distance > 0.1)
+            {
+                //camera forward and right vectors:
+                var forward = camera.transform.forward;
+                var right = camera.transform.right;
+
+                //steering.Normalize();
+                //project forward and right vectors on the horizontal plane (y = 0)
+                forward.y = 0f;
+                right.y = 0f;
+                forward.Normalize();
+                right.Normalize();
+
+
+                //this is the direction in the world space we want to move:
+                var desiredMoveDirection = forward * 0 + right * 1;
+                desiredMoveDirection.Normalize();
+                desiredMoveDirection *= -1;
+                clawHolder.Translate(desiredMoveDirection * movementSpeed * Time.deltaTime);
+            }
+        }               
     }
+
+    
 
     /// <summary>
     /// Used to drop the claw from a position. 
