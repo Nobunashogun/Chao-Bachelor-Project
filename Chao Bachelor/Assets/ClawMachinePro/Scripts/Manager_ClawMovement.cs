@@ -64,17 +64,9 @@ public class Manager_ClawMovement : MonoBehaviour {
     public float clawHeadSizeZ = 0.13f;
 
     // Movement boundaries
-    private float boundaryX_Left;
-    private float boundaryX_Right;
-    private float boundaryZ_Back;
-    private float boundaryZ_Forward;
     
-    [Space(5f)]
-
-    public Transform clawBoundaryX_Left;
-    public Transform clawBoundaryX_Right;
-    public Transform clawBoundaryZ_Back;
-    public Transform clawBoundaryZ_Forward;
+    
+    
 
     
 
@@ -98,15 +90,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         
 
         // Setup our boundaries
-        boundaryX_Left = clawBoundaryX_Left.position.x;
-        boundaryX_Right = clawBoundaryX_Right.position.x;
-        boundaryZ_Back = clawBoundaryZ_Back.position.z;
-        boundaryZ_Forward = clawBoundaryZ_Forward.position.z;
-
-        boundaryX_Left += clawHeadSizeX;
-        boundaryX_Right -= clawHeadSizeX;
-        boundaryZ_Back -= clawHeadSizeZ;
-        boundaryZ_Forward += clawHeadSizeZ;
+        
         canMove = true;
     }
 	
@@ -124,14 +108,15 @@ public class Manager_ClawMovement : MonoBehaviour {
             // Used to Open Claw Head
             if (Input.GetKey(KeyCode.O))
             {
-                openClawButtonInput();
+                //openClawButtonInput();
             }
 
             // Press P key to drop the claw
-            if (Input.GetKey(KeyCode.P))
+            if (player.GetButtonDown("Confirm"))
             {
                 dropClawButtonInput();
             }
+            
             
             // Normal inputs below...
             if (player.GetAxisRaw("Vertical") > 0.05f)
@@ -206,7 +191,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         }
     }
 
-    private void openClawButtonInput()
+    public void openClawButtonInput()
     {
         // If we're not actively dropping the ball - This prevents from trying to drop multiple times
         if (!isDroppingBall)
@@ -249,6 +234,10 @@ public class Manager_ClawMovement : MonoBehaviour {
                 // Move our claw
 
                 Debug.Log("Claw Move Up Camera Correction");
+            }
+            else
+            {
+                Debug.Log("collide with wall");
             }
         }
         
