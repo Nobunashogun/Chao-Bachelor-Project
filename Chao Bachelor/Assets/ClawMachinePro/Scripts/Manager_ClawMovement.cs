@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Rewired;
+using System.Diagnostics;
 
 public class Manager_ClawMovement : MonoBehaviour {
 
@@ -21,17 +22,25 @@ public class Manager_ClawMovement : MonoBehaviour {
 
     // Our object that we move which, in turn, moves the claw and rope
     public Transform clawHolder;
-
+    public Transform rayCastTransform;
     // X and Z movement speed
     public float movementSpeed = 1.0f; 
 
     // Y drop and raise speed
     public float dropSpeed = 1.0f;
+    public float raiseSpeed = 1.0f;
 
-    [Range(0,10)]
-    public int failRate = 0;
+    public float clawOpenSpeed = 1.0f;
+    public float clawCloseSpeed = 1.0f;
 
-    
+    public float clawBottomWaitTime = 1.0f;
+    // min distance to object down
+    public float minDistanceToStop = 0.1f;
+    public bool isDropping = false;
+    public bool isHoldingItem = false;
+
+
+
     // This is false when we are droping / rasing the claw.
     public bool canMove = true;
 
@@ -64,8 +73,8 @@ public class Manager_ClawMovement : MonoBehaviour {
     public float clawHeadSizeZ = 0.13f;
 
     // Movement boundaries
-    
-    
+
+    private float raydistance;
     
 
     
@@ -104,12 +113,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     {
         // If movement is allowed
         if (canMove)
-        {
-            // Used to Open Claw Head
-            if (Input.GetKey(KeyCode.O))
-            {
-                //openClawButtonInput();
-            }
+        {          
 
             // Press P key to drop the claw
             if (player.GetButtonDown("Confirm"))
@@ -122,7 +126,7 @@ public class Manager_ClawMovement : MonoBehaviour {
             if (player.GetAxisRaw("Vertical") > 0.05f)
             {
                 clawMoveUp();
-                Debug.Log("Up Arrow Pressed");
+                //Debug.Log("Up Arrow Pressed");
             }
 
             if (player.GetAxisRaw("Vertical")< -0.05)
@@ -148,47 +152,20 @@ public class Manager_ClawMovement : MonoBehaviour {
     private void dropClawButtonInput()
     {
         // Make sure we're NOT above the prize catcher, we need to do a release for that, NOT a drop
-        if (prizeCatcherDetector.isClawAbovePrizeCatcher)
+        if (isHoldingItem)
         {
-            // Open the claw since we're above the prize catcher and we do not want to drop the claw here, just open it.
-            openClawButtonInput();
+            // open claw
         }
-        else
-        {
-            // Drop like normal...
 
-            // If we're NOT in free play
-            if (freePlay)
-            {
-                // Drop our claw
-                StartCoroutine(dropClaw());
 
-                // Disable movement until done performing this action
-                canMove = false;
-            }
-            else if (!freePlay)
-            {
-                // Make sure the player has coins
-                if (playerCoins > 0)
-                {
-                    playerCoins--;  // Remove one coin
-
-                    // Drop our claw
-                    StartCoroutine(dropClaw());
-
-                    // Disable movement until done performing this action
-                    canMove = false;
-                }
-                else
-                {
-                    // Alert the player they have no coins left
-                    /*
-                    if (!UI_OutOfCoinsPopup.activeInHierarchy)
-                        UI_OutOfCoinsPopup.SetActive(true);
-                    */
-                }
-            }
-        }
+        // get current position of claw
+        clawDropFromPosition = clawHolder.transform.position;
+        isDropping = true;
+        StartCoroutine(NewDropClaw());
+        canMove = false;
+            
+            
+        
     }
 
     public void openClawButtonInput()
@@ -198,6 +175,8 @@ public class Manager_ClawMovement : MonoBehaviour {
         {
             // Drop the ball
             StartCoroutine(DropBall());
+            OpenClaw();
+            
         }
     }
 
@@ -233,11 +212,11 @@ public class Manager_ClawMovement : MonoBehaviour {
 
                 // Move our claw
 
-                Debug.Log("Claw Move Up Camera Correction");
+                //Debug.Log("Claw Move Up Camera Correction");
             }
             else
             {
-                Debug.Log("collide with wall");
+                //Debug.Log("collide with wall");
             }
         }
         
@@ -348,7 +327,53 @@ public class Manager_ClawMovement : MonoBehaviour {
     }
 
     
+    IEnumerator NewDropClaw()
+    {
+        OpenClaw();
+        while (isDropping)
+        {
+            Ray ray = new Ray(rayCastTransform.transform.position, Vector3.down);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                print(hit.transform.name + " "+ hit.distance);
+                if(hit.distance > minDistanceToStop)
+                {
+                    clawHolder.Translate(0f, dropSpeed * -1 * Time.deltaTime, 0f);
+                }
+                else
+                {
+                    isDropping = false;
+                }
+            }
+            
+            yield return null;
+        }
+        CloseClaw();
+        yield return new WaitForSeconds(clawBottomWaitTime);
 
+        while (!isDropping)
+        {
+            
+            if(clawHolder.transform.position.y < clawDropFromPosition.y)
+            {
+                clawHolder.Translate(0f, raiseSpeed * 1 * Time.deltaTime, 0f);
+            }
+            else
+            {
+                canMove = true;
+                yield break;
+            }
+            
+
+            yield return null;
+        }
+        
+
+        
+
+    }
+    
     /// <summary>
     /// Used to drop the claw from a position. 
     /// </summary>
@@ -361,23 +386,36 @@ public class Manager_ClawMovement : MonoBehaviour {
         // Play opening animation
         OpenClaw();
 
-        // While we're larger than our vertical Y limit
-        while (clawHolder.transform.position.y >= LimitY)
+
+        Ray ray = new Ray(clawHolder.transform.position, Vector3.down);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
         {
-            // If something stops our movement, breakout. This is the WallSensor_ClawMachine script right now.
-            if(stopMovement)
-            {
-                break;
-            }
+            raydistance = hit.distance;
+        }
+        while (raydistance > minDistanceToStop)//while claw is further away than min distance and claw is open)
+        {
+                //if movement is stopped, breakout
+                
+                if (stopMovement)
+                {
+                    break;
+                }
 
-            // Drop our claw
-            clawHolder.Translate(0f, dropSpeed * -1 * Time.deltaTime, 0f);
-
+                clawHolder.Translate(0f, dropSpeed * -1 * Time.deltaTime, 0f);
+                ray = new Ray(clawHolder.transform.position, Vector3.down);
+                if (Physics.Raycast(ray, out hit))
+                {
+                    raydistance = hit.distance;
+                }
+            //Debug.Log(hit.transform.name + hit.distance);
             yield return null;
         }
-
+        
+        
+        
         // Wait a few
-        yield return new WaitForSeconds(1.0f);
+        //yield return new WaitForSeconds(1.0f);
 
         // If movement was stopped
         if (stopMovement)
@@ -398,6 +436,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         }
         else
         {
+            /*
             // Implement some level of failure of closing the claw tight enough. Tricky!
             if (Random.Range(1, 10) <= failRate)
             {
@@ -409,8 +448,8 @@ public class Manager_ClawMovement : MonoBehaviour {
                 // Close claw head
                 CloseClaw();
             }
-
-            yield return new WaitForSeconds(1.0f);
+            */
+            //yield return new WaitForSeconds(1.0f);
 
             // First go back up
             while (clawHolder.transform.position.y <= clawDropFromPosition.y)
@@ -487,7 +526,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     private void OpenClaw()
     {
         // Play opening animation
-        clawHeadAnimation["Claw_Open_New"].speed = 1.5f;
+        clawHeadAnimation["Claw_Open_New"].speed = clawOpenSpeed;
         clawHeadAnimation["Claw_Open_New"].time = 0f;
         clawHeadAnimation.CrossFade("Claw_Open_New");
     }
@@ -497,7 +536,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     /// </summary>
     private void CloseClaw()
     {
-        clawHeadAnimation["Claw_Open_New"].speed = -1.5f;
+        clawHeadAnimation["Claw_Open_New"].speed = -clawCloseSpeed;
         clawHeadAnimation["Claw_Open_New"].time = clawHeadAnimation["Claw_Open_New"].length;
         clawHeadAnimation.CrossFade("Claw_Open_New");
     }
