@@ -22,4 +22,5 @@ public class ObstacleSensorScript : MonoBehaviour
             manager.isHoldingItem = false;
         }
     }
+    
 }
