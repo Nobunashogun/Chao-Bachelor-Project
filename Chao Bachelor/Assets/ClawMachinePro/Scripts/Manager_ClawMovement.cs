@@ -154,15 +154,19 @@ public class Manager_ClawMovement : MonoBehaviour {
         // Make sure we're NOT above the prize catcher, we need to do a release for that, NOT a drop
         if (isHoldingItem)
         {
-            // open claw
+            StartCoroutine(DropBall());
+        }
+        else
+        {
+            clawDropFromPosition = clawHolder.transform.position;
+            isDropping = true;
+            StartCoroutine(NewDropClaw());
+            canMove = false;
         }
 
 
         // get current position of claw
-        clawDropFromPosition = clawHolder.transform.position;
-        isDropping = true;
-        StartCoroutine(NewDropClaw());
-        canMove = false;
+        
             
             
         
@@ -575,6 +579,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         CloseClaw();
 
         // Flag we can drop a ball again
+        isHoldingItem = false;
         isDroppingBall = false;
     }
 
