@@ -10,9 +10,14 @@ public class PlatformScript : MonoBehaviour
     public GameObject platform;
     public float speed = 1.5f;
     float dist;
+    Rigidbody rb;
+
     void Start()
     {
+       rb = platform.GetComponent<Rigidbody>();
+        
         StartCoroutine(MoveToA());
+
     }
 
     IEnumerator MoveToA()
@@ -22,7 +27,8 @@ public class PlatformScript : MonoBehaviour
         Vector3 dir = posA.position - platform.transform.position ;  
         while(dist > 0.5)
         {
-            platform.transform.Translate(dir * speed * Time.deltaTime);
+            //platform.transform.Translate(dir * speed * Time.deltaTime);
+            rb.position += dir * speed * Time.fixedDeltaTime;
             dist = Vector3.Distance(platform.transform.position, posA.position);
             //print(dist);
             yield return null;
@@ -37,7 +43,8 @@ public class PlatformScript : MonoBehaviour
         Vector3 dir = posB.position - platform.transform.position;
         while (dist > 0.5)
         {
-            platform.transform.Translate(dir * speed * Time.deltaTime);
+            //platform.transform.Translate(dir * speed * Time.deltaTime);
+            rb.position += dir * speed * Time.fixedDeltaTime;
             dist = Vector3.Distance(platform.transform.position, posB.position);
             yield return null;
         }

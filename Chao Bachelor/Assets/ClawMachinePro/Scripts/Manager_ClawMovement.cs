@@ -36,8 +36,9 @@ public class Manager_ClawMovement : MonoBehaviour {
     public float clawBottomWaitTime = 1.0f;
     // min distance to object down
     public float minDistanceToStop = 0.1f;
-    public bool isDropping = false;
+    public bool isDroppingForCatch = false;
     public bool isHoldingItem = false;
+    public bool isDroppingItem = false;
 
 
 
@@ -159,7 +160,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         else
         {
             clawDropFromPosition = clawHolder.transform.position;
-            isDropping = true;
+            isDroppingForCatch = true;
             StartCoroutine(NewDropClaw());
             canMove = false;
         }
@@ -334,20 +335,21 @@ public class Manager_ClawMovement : MonoBehaviour {
     IEnumerator NewDropClaw()
     {
         OpenClaw();
-        while (isDropping)
+        while (isDroppingForCatch)
         {
             Ray ray = new Ray(rayCastTransform.transform.position, Vector3.down);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                print(hit.transform.name + " "+ hit.distance);
+                
+                //print(hit.transform.name + " "+ hit.distance);
                 if(hit.distance > minDistanceToStop)
                 {
                     clawHolder.Translate(0f, dropSpeed * -1 * Time.deltaTime, 0f);
                 }
                 else
                 {
-                    isDropping = false;
+                    isDroppingForCatch = false;
                 }
             }
             
@@ -356,7 +358,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         CloseClaw();
         yield return new WaitForSeconds(clawBottomWaitTime);
 
-        while (!isDropping)
+        while (!isDroppingForCatch)
         {
             
             if(clawHolder.transform.position.y < clawDropFromPosition.y)
@@ -567,7 +569,7 @@ public class Manager_ClawMovement : MonoBehaviour {
     /// Used to drop the ball
     /// </summary>
     /// <returns></returns>
-    IEnumerator DropBall()
+    public IEnumerator DropBall()
     {
         // Flag we are dropping our balls
         isDroppingBall = true;
@@ -581,6 +583,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         // Flag we can drop a ball again
         isHoldingItem = false;
         isDroppingBall = false;
+        canMove = true;
     }
 
 
