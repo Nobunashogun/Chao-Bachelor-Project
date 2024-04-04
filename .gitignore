@@ -63,3 +63,7 @@ crashlytics-build.properties
 
 
 Chao Bachelor/Library/
+
+*.wktree
+
+Chao Bachelor/UserSettings/Layouts/default-2022.dwlt
