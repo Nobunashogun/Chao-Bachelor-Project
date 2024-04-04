@@ -1866,8 +1866,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveDuration: 0.1
   ismoving: 0
-  targetangle: 0
-  initialangle: 0
+  enableOldStyle: 1
+  targetint: 0
+  currentint: 0
+  maxCommandChain: 3
+  CameraPositions:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &593735969
 Transform:
   m_ObjectHideFlags: 0
