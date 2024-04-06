@@ -12,7 +12,7 @@ public class CameraRotater : MonoBehaviour
     public float moveDuration;   
     public bool ismoving = false;
     public bool enableOldStyle = false;
-
+    public GameObject Camera;
 
     private Player player;
     float r;
@@ -84,40 +84,47 @@ public class CameraRotater : MonoBehaviour
     }
     void NewRotate()
     {
+            
         
-        
-            if (player.GetButtonDown("LeftArrow"))
+            if (player.GetButtonDown("RightArrow"))
             {
                 //add 1 every time we press left
-                if (targetint == CameraPositions.Length)
+                if (targetint == CameraPositions.Length-1)
                 {
                     targetint = 0;
-                    //start Coroutine
+                //start Coroutine
+                StartCoroutine(LerpToNext(CameraPositions[targetint].position, CameraPositions[targetint].rotation, moveDuration));
                 }
                 else
                 {
                     targetint += 1;
-                    //start Coroutine
-                }
+                //start Coroutine
+                StartCoroutine(LerpToNext(CameraPositions[targetint].position, CameraPositions[targetint].rotation, moveDuration));
+            }
 
             }
-            if (player.GetButtonDown("RightArrow"))
+            if (player.GetButtonDown("LeftArrow"))
             {
                 //subtract 1 every time we press right
                 if (targetint == 0)
                 {
-                    targetint = CameraPositions.Length;
-                    //start Coroutine
-                }
+                    targetint = CameraPositions.Length-1;
+                //start Coroutine
+                StartCoroutine(LerpToNext(CameraPositions[targetint].position, CameraPositions[targetint].rotation, moveDuration));
+            }
                 else
                 {
                     targetint -= 1;
-                    //start Coroutine
-                }
+                //start Coroutine
+                StartCoroutine(LerpToNext(CameraPositions[targetint].position, CameraPositions[targetint].rotation, moveDuration));
+            }
 
             }
         
-        
+            if(currentint != targetint)
+            {
+                
+            }
         
         
 
@@ -127,20 +134,21 @@ public class CameraRotater : MonoBehaviour
     IEnumerator LerpToNext(Vector3 targetPos, Quaternion targetRot, float moveTime)
     {
         float time = 0;
-        Vector3 startPosition = transform.position;
-        Quaternion startValue = transform.rotation;
+        Vector3 startPosition = Camera.transform.position;
+        Quaternion startValue = Camera.transform.rotation;
 
         while (time < moveTime)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPos, time / moveTime);
-            transform.rotation = Quaternion.Lerp(startValue, targetRot, time / moveTime);
+            Camera.transform.position = Vector3.Lerp(startPosition, targetPos, time / moveTime);
+            Camera.transform.rotation = Quaternion.Lerp(startValue, targetRot, time / moveTime);
             time += Time.deltaTime;
             yield return null;
         }
-        transform.position = targetPos;
-        transform.rotation = targetRot;
+        Camera.transform.position = targetPos;
+        Camera.transform.rotation = targetRot;
 
         //start next coroutine
+
     }
     void MoveCam()
     {

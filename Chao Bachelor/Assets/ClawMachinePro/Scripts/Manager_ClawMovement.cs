@@ -341,7 +341,10 @@ public class Manager_ClawMovement : MonoBehaviour {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                
+                if (stopMovement)
+                {
+                    break;
+                }
                 //print(hit.transform.name + " "+ hit.distance);
                 if(hit.distance > minDistanceToStop)
                 {
@@ -357,7 +360,7 @@ public class Manager_ClawMovement : MonoBehaviour {
         }
         CloseClaw();
         yield return new WaitForSeconds(clawBottomWaitTime);
-
+        /*
         while (!isDroppingForCatch)
         {
             
@@ -367,16 +370,84 @@ public class Manager_ClawMovement : MonoBehaviour {
             }
             else
             {
-                canMove = true;
+                //canMove = true;
                 yield break;
             }
             
 
             yield return null;
         }
-        
+        */
+        // move claw back to drop space
+        if (!isHoldingItem)
+        {
+            // Go right back up to where we dropped from
+            while (clawHolder.transform.position.y <= clawDropFromPosition.y)
+            {
+                // Move
+                clawHolder.Translate(0f, dropSpeed * 1 * Time.deltaTime, 0f);
 
-        
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.15f);
+
+            // Close the claw
+            CloseClaw();
+        }
+        else
+        {
+            
+            // First go back up
+            while (clawHolder.transform.position.y <= clawDropFromPosition.y)
+            {
+                clawHolder.Translate(0f, dropSpeed * 1 * Time.deltaTime, 0f);
+
+                yield return null;
+            }
+
+            if (shouldReturnHomeAutomatically)
+            {
+                yield return new WaitForSeconds(0.5f);
+
+                // Return home now
+                float startTime = Time.time;
+                float journeyLength = Vector3.Distance(clawHolder.transform.position, clawHomePosition);
+
+                while (Vector3.Distance(clawHolder.transform.position, clawHomePosition) > 0.05f)
+                {
+                    // Distance moved = time * speed.
+                    float distCovered = (Time.time - startTime) * 0.03f;
+
+                    // Fraction of journey completed = current distance divided by total distance.
+                    float fracJourney = distCovered / journeyLength;
+
+                    // Let's lerp the position closer to the home
+                    clawHolder.transform.position = Vector3.Lerp(clawHolder.transform.position, clawHomePosition, fracJourney);
+                    yield return null;
+                }
+
+                // Reset to exact position
+                clawHolder.transform.position = clawHomePosition;
+
+                // Play opening animation
+                OpenClaw();
+
+                yield return new WaitForSeconds(1.10f);
+
+                CloseClaw();
+            }
+        }
+
+        // We can move now
+        canMove = true;
+
+        // Allow movement again if stopped from collding with inside wall
+        stopMovement = false;
+
+        yield return null;
+
+
 
     }
     

@@ -19,6 +19,7 @@ public class ItemDetectorScript : MonoBehaviour
         if (other.gameObject.CompareTag("Item"))
         {
             manager.isHoldingItem = false;
+            manager.stopMovement = true;
         }
     }
 }
